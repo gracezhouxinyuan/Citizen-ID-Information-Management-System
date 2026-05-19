@@ -16,21 +16,46 @@ struct person
 };
 
 int read(struct person p[])
-{
-   
+{    FILE *fp = fopen("person.txt", "r");
+    if (fp == NULL)
+    {
+        printf("文件打开失败！\n");
+        return 0;
+    }
+    int n = 0;
+    while (fscanf(fp, "%s %s", p[n].ID, p[n].name) != EOF && n < N)
+    {
+        n++;
+    }
+    fclose(fp);
+    return n;  
 }
 
 int checkID(char *ID)
+{     if (strlen(ID) != 18)
+        return 0;   
+    int weight[17] = {7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2}；
+    char checkCode[] = "10X98765432";
+    int sum = 0;   
+    for (int i = 0; i < 17; i++)
+    {
+        if (!isdigit(ID[i]))
+            return 0;   
+        sum += (ID[i] - '0') * weight[i];
+    }
+    int mod = sum % 11;
+    char last = ID[17];   
+    if (last >= 'a' && last <= 'z')
+        last -= 32;   
+    return (last == checkCode[mod]) ? 1 : 0;
+}
+
+struct   结构体 birth get_birth(char *ID)
 {
 
 }
 
-struct birth get_birth(char *ID)
-{
-
-}
-
-void get_all_person(struct person p[], int n)
+void get_all_person（struct   结构体 person p[], int n）get_all_person(struct   结构体 person p[], int n)
 {
 
 }
