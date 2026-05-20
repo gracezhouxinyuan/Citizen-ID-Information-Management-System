@@ -50,12 +50,12 @@ int checkID(char *ID)
     return (last == checkCode[mod]) ? 1 : 0;
 }
 
-struct   结构体 birth get_birth(char *ID)
+struct birth get_birth(char *ID)
 {
 
 }
 
-void get_all_person（struct   结构体 person p[], int n）get_all_person(struct   结构体 person p[], int n)
+void get_all_person（struct person p[], int n）get_all_person(struct person p[], int n)
 {
 int i;
     int count = 0;
