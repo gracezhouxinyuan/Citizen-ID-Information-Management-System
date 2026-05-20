@@ -57,12 +57,48 @@ struct   结构体 birth get_birth(char *ID)
 
 void get_all_person（struct   结构体 person p[], int n）get_all_person(struct   结构体 person p[], int n)
 {
+int i;
+    int count = 0;
 
+    // 表头
+    printf("姓名\t\t身份证\t\t\t出生年月\t\t校验位\n");
+    printf("------------------------------------------------------------\n");
+
+    for (i = 0; i < n; i++)
+    {
+        // 只显示指定类型（正确/错误）
+        if (p[i].flag == flag)
+        {
+            printf("%-10s", p[i].name);
+            printf("%-18s", p[i].ID);
+            printf("%4d年%02d月%02d日\t",
+                   p[i].birthday.year,
+                   p[i].birthday.month,
+                   p[i].birthday.day);
+
+            if (flag == 1)
+                printf("正确\n");
+            else
+                printf("错误\n");
+
+            count++;
+        }
+    }
+
+    if (flag == 1)
+        printf("正确信息人数：%d\n", count);
+    else
+        printf("错误信息人数：%d\n", count);
 }
 
 void display_person(struct person p[], int n, int flag)
 {
-
+int i;
+    for (i = 0; i < n; i++)
+    ｛
+        p[i].birthday = get_birth(p[i].ID)
+        p[i].flag = checkID(p[i].ID);
+    }
 }
 
 int birth_cmp(struct birth birth1, struct birth birth2)
