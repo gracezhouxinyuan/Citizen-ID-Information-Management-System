@@ -52,7 +52,18 @@ int checkID(char *ID)
 
 struct birth get_birth(char *ID)
 {
-
+struct birth b;
+     char year_str[5], month_str[3], day_str[3];
+     strncpy(year_str, ID + 6, 4);
+     year_str[4] = '\0';
+     strncpy(month_str, ID + 10, 2);
+     month_str[2] = '\0';
+     strncpy(day_str, ID + 12, 2);
+     day_str[2] = '\0';
+     b.year = atoi(year_str);
+     b.month = atoi(month_str);
+     b.day = atoi(day_str);
+     return b;
 }
 
 void get_all_person（struct person p[], int n）get_all_person(struct person p[], int n)
@@ -103,7 +114,11 @@ int i;
 
 int birth_cmp(struct birth birth1, struct birth birth2)
 {
-
+if (birth1.year != birth2.year)
+         return birth1.year - birth2.year;
+     if (birth1.month != birth2.month)
+         return birth1.month - birth2.month;
+     return birth1.day - birth2.day;
 }
 
 void birth_sort(struct person p[], int n)
