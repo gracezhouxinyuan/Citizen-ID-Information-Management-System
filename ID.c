@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <string.h>
 #define N 100
 struct birth
@@ -107,7 +106,7 @@ void display_person(struct person p[], int n, int flag)
 int i;
     for (i = 0; i < n; i++)
     ｛
-        p[i].birthday = get_birth(p[i].ID)
+        p[i].birthday = get_birth(p[i].ID);
         p[i].flag = checkID(p[i].ID);
     }
 }
@@ -121,32 +120,21 @@ if (birth1.year != birth2.year)
      return birth1.day - birth2.day;
 }
 
-void birth_sort(struct person p[], int n)
-{
-    struct person temp;
-    for (int i = 0; i < n - 1; i++)
+void birth_sort(struct person p[], int n) 
     {
-        for (int j = 0; j < n - i - 1; j++)
-        {
-            if (p[j].flag == 1 && p[j+1].flag == 1)
-            {
-                if (birth_cmp(p[j].birthday, p[j+1].birthday) > 0)
-                {
-                    temp = p[j];
-                    p[j] = p[j+1];
-                    p[j+1] = temp;
-                }
-            }
-            else if (p[j].flag == 0 && p[j+1].flag == 1)
-            {
+    struct person temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - 1 - i; j++) {
+            // 利用 birth_cmp 比较两个人的生日。
+            // 如果 birth_cmp 返回正数，说明 p[j] 出生晚于 p[j+1]（年龄小）
+            // 我们需要把年龄大的（出生早的）排在前面，所以此时需要交换位置
+            if (birth_cmp(p[j].birthday, p[j + 1].birthday) > 0) {
                 temp = p[j];
-                p[j] = p[j+1];
-                p[j+1] = temp;
+                p[j] = p[j + 1];
+                p[j + 1] = temp;
             }
         }
     }
-    printf("按出生日期排序完成！\n");
-
 }
 
 int search(struct person p[], int n, char *name)
@@ -168,88 +156,83 @@ int search(struct person p[], int n, char *name)
     return cnt;
 }
 
-void save(struct person p[], int n)
-{
-    FILE *fp = fopen("person_processed.txt", "w");
-    if (fp == NULL)
-    {
-        printf("保存文件失败！无法创建备份文件。\n");
+void save(struct person p[], int n) {
+    FILE *fp = fopen("person_checked.txt", "w");
+    if (fp == NULL) {
+        printf("无法创建或写入 person_checked.txt 文件！\n");
         return;
     }
-    
-    fprintf(fp, "姓名\t\t身份证号\t\t出生日期\t\t校验状态\n");
-    fprintf(fp, "---------------------------------------------------------\n");
-    
-    for (int i = 0; i < n; i++)
-    {
-        fprintf(fp, "%-10s\t%-18s\t%04d-%02d-%02d\t%s\n",
-                p[i].name,
-                p[i].ID,
-                p[i].birthday.year,
-                p[i].birthday.month,
-                p[i].birthday.day,
-                p[i].flag == 1 ? "校验正确" : "校验错误");
+    for (int i = 0; i < n; i++) {
+        // 只保存校验通过的公民信息
+        if (p[i].flag == 1) {
+            fprintf(fp, "%-18s\t%-10s\t%d %d %d\n", 
+                    p[i].ID, 
+                    p[i].name, 
+                    p[i].birthday.year, 
+                    p[i].birthday.month, 
+                    p[i].birthday.day);
+        }
     }
-    fclose(fp);   文件关闭(fp);
-    printf("系统初始化：已成功将格式化数据备份至 person_processed.txt\n");
-
+    fclose(fp);
+    printf("已成功将身份证号码正确的数据保存至 person_checked.txt 文件中。\n");
 }
 
-int prompt(void)   int提示(空白)
+
+int prompt(void)
 {
     int cmd=0;
     printf("-------------------\n");
     printf("1.  公民信息显示（不含错误信息）\n");
-    printf("2.  错误信息查询\n");   printf("2. Error Information Inquiry\n");
+    printf("2.  错误信息查询\n");
     printf("3.  按出生日期排序（不含错误信息）\n");
     printf("4.  重名查询（不含错误信息）\n");
-    printf("0.  退出\n");   printf("0.  退出\n");
+    printf("0.  退出\n");
     printf("-------------------\n");
     printf("请输入你的选择(0-4):");
-    scanf("%d", &cmd);   scanf("%d", &cmd);
-    return cmd;   返回cmd;
+    scanf("%d", &cmd);
+    return cmd;
 }
 
-int main(void)   int主要(空白)
+int main(void)
 {
-    struct person p[N];   struct   结构体 person p[N]；
-    int cmd, n;   Int cmd, n；
-    char*name;   char *名称;
+    struct person p[N];
+    int cmd, n;
+    char*name;
     name=(char*)malloc(20*sizeof(char));
-    n=read(p);   n =阅读(p);
-    get_all_person(p, n);   获取所有人员(p, n)；
-    save   保存(p, n);   保存(p, n);
-    while (1)   而(1)
-    {   cmd=prompt();   迅速将cmd = ();
-        if (cmd==0)   如果(cmd = = 0)
+    n=read(p);
+    get_all_person(p, n);
+    save(p, n);
+    while (1)
+    {   cmd=prompt();
+        if (cmd==0)
         {
-            printf("程序结束。\n");   printf("程序结束。\n");
-            break;   打破;
+            printf("程序结束。\n");
+            break;
         }
-        if (cmd==1)   如果(cmd = = 1)
+        if (cmd==1)
         {
-            display_person(p, n, 1);   显示人物(p, n， 1)；
+            display_person(p, n, 1);
         }
-        else if (cmd==2)   否则if   如果 （cmd==2）
+        else if (cmd==2)
         {
-            display_person(p, n, 0);   显示人物(p, n， 0)；
+            display_person(p, n, 0);
         }
-        else if (cmd==3)   否则if   如果 （cmd==3）
+        else if (cmd==3)
         {
             birth_sort(p, n);
-            display_person(p, n, 1);   显示人物(p, n， 1)；
+            display_person(p, n, 1);
         }
-        else if (cmd==4)   否则if   如果 （cmd==4）
+        else if (cmd==4)
         {
             printf("请输入要查询的姓名:");
-            scanf("%19s", name);   scanf("%19s", name);
-            search(p, n, name);   搜索（p, n, name）；
+            scanf("%19s", name);
+            search(p, n, name);
         }
-        else   其他
+        else
         {
             printf("输入无效，请重新输入。\n");
         }
     } 
-    free(name);   免费(名称);
-    return 0;   返回0;
+    free(name);
+    return 0;
 }
