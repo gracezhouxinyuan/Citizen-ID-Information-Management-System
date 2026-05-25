@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stlib.h>
 #include <string.h>
 #define N 100
 struct birth
