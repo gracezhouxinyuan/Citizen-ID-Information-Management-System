@@ -1,6 +1,7 @@
 #include <stdio.h>
-#include <stlib.h>
+#include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #define N 100
 struct birth
 {
@@ -17,14 +18,16 @@ struct person
 };
 
 int read(struct person p[])
-{    FILE *fp = fopen("person.txt", "r");
+{   
+    FILE *fp;
+    int n=0;
+    fp = fopen("person.txt", "r");
     if (fp == NULL)
     {
         printf("文件打开失败！\n");
         return 0;
     }
-    int n = 0;
-    while (fscanf(fp, "%s %s", p[n].ID, p[n].name) != EOF && n < N)
+    while (n < N && fscanf(fp, "%18s%19s", p[n].ID, p[n].name) == 2)
     {
         n++;
     }
@@ -38,9 +41,10 @@ int checkID(char *ID)
     int weight[17] = {7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2};
     char checkCode[] = "10X98765432";
     int sum = 0;   
-    for (int i = 0; i < 17; i++)
+    int i;
+    for (i = 0; i < 17; i++)
     {
-        if (!isdigit(ID[i]))
+        if (!isdigit((unsigned char)ID[i]))
             return 0;   
         sum += (ID[i] - '0') * weight[i];
     }
@@ -67,31 +71,37 @@ struct birth b;
      return b;
 }
 
-void get_all_person（struct person p[], int n）get_all_person(struct person p[], int n)
+void get_all_person(struct person p[], int n)
 {
-int i;
-    int count = 0;
+    int i;
+    for (i = 0; i < n; i++)
+    {
+        p[i].birthday = get_birth(p[i].ID);
+        p[i].flag = checkID(p[i].ID);
+    }
+}
 
-    // 表头
-    printf("姓名\t\t身份证\t\t\t出生年月\t\t校验位\n");
-    printf("------------------------------------------------------------\n");
+void display_person(struct person p[], int n, int flag)
+{
+    int i;
+    int count = 0;
+    printf("\n%-20s %-12s %-20s %-10s\n", "身份证", "姓名", "出生年月", "校验位");
 
     for (i = 0; i < n; i++)
     {
-        // 只显示指定类型（正确/错误）
         if (p[i].flag == flag)
         {
-            printf("%-10s", p[i].name);
-            printf("%-18s", p[i].ID);
-            printf("%4d年%02d月%02d日\t",
+            printf("%-10s ", p[i].name);
+            printf("%-18s ", p[i].ID);
+            printf("%4d年%02d月%02d日 ",
                    p[i].birthday.year,
                    p[i].birthday.month,
                    p[i].birthday.day);
 
             if (flag == 1)
-                printf("正确\n");
+                printf(" 正确\n");
             else
-                printf("错误\n");
+                printf(" 错误\n");
 
             count++;
         }
@@ -101,16 +111,6 @@ int i;
         printf("正确信息人数：%d\n", count);
     else
         printf("错误信息人数：%d\n", count);
-}
-
-void display_person(struct person p[], int n, int flag)
-{
-int i;
-    for (i = 0; i < n; i++)
-    ｛
-        p[i].birthday = get_birth(p[i].ID);
-        p[i].flag = checkID(p[i].ID);
-    }
 }
 
 int birth_cmp(struct birth birth1, struct birth birth2)
@@ -125,11 +125,9 @@ if (birth1.year != birth2.year)
 void birth_sort(struct person p[], int n) 
     {
     struct person temp;
-    for (int i = 0; i < n - 1; i++) {
-        for (int j = 0; j < n - 1 - i; j++) {
-            // 利用 birth_cmp 比较两个人的生日。
-            // 如果 birth_cmp 返回正数，说明 p[j] 出生晚于 p[j+1]（年龄小）
-            // 我们需要把年龄大的（出生早的）排在前面，所以此时需要交换位置
+    int i,j;
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - 1 - i; j++) {
             if (birth_cmp(p[j].birthday, p[j + 1].birthday) > 0) {
                 temp = p[j];
                 p[j] = p[j + 1];
@@ -143,14 +141,10 @@ int search(struct person p[], int n, char *name)
 {
     int i;
     int cnt=0;
-    printf("\n同名且身份证校验正确的信息如下:\n");
-    printf("%-20s %-12s %-12s\n", "ID", "Name", "Birthday");
-    printf("----------------------------------------------------\n");
     for (i=0;i<n;i++)
     {
         if (p[i].flag==1&&strcmp(p[i].name, name)==0)
         {
-            printf("%-20s %-12s %04d-%02d-%02d\n",p[i].ID, p[i].name,p[i].birthday.year, p[i].birthday.month, p[i].birthday.day);
             cnt++;
         }
     }
@@ -164,10 +158,10 @@ void save(struct person p[], int n) {
         printf("无法创建或写入 person_checked.txt 文件！\n");
         return;
     }
-    for (int i = 0; i < n; i++) {
-        // 只保存校验通过的公民信息
+    int i;
+    for (i = 0; i < n; i++) {
         if (p[i].flag == 1) {
-            fprintf(fp, "%-18s\t%-10s\t%d %d %d\n", 
+            fprintf(fp, "%-18s %-10s %d %d %d\n", 
                     p[i].ID, 
                     p[i].name, 
                     p[i].birthday.year, 
