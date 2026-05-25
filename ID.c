@@ -34,7 +34,7 @@ int read(struct person p[])
 int checkID(char *ID)
 {     if (strlen(ID) != 18)
         return 0;   
-    int weight[17] = {7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2}；
+    int weight[17] = {7,9,10,5,8,4,2,1,6,3,7,9,10,5,8,4,2};
     char checkCode[] = "10X98765432";
     int sum = 0;   
     for (int i = 0; i < 17; i++)
@@ -123,6 +123,29 @@ if (birth1.year != birth2.year)
 
 void birth_sort(struct person p[], int n)
 {
+    struct person temp;
+    for (int i = 0; i < n - 1; i++)
+    {
+        for (int j = 0; j < n - i - 1; j++)
+        {
+            if (p[j].flag == 1 && p[j+1].flag == 1)
+            {
+                if (birth_cmp(p[j].birthday, p[j+1].birthday) > 0)
+                {
+                    temp = p[j];
+                    p[j] = p[j+1];
+                    p[j+1] = temp;
+                }
+            }
+            else if (p[j].flag == 0 && p[j+1].flag == 1)
+            {
+                temp = p[j];
+                p[j] = p[j+1];
+                p[j+1] = temp;
+            }
+        }
+    }
+    printf("按出生日期排序完成！\n");
 
 }
 
@@ -147,64 +170,86 @@ int search(struct person p[], int n, char *name)
 
 void save(struct person p[], int n)
 {
+    FILE *fp = fopen("person_processed.txt", "w");
+    if (fp == NULL)
+    {
+        printf("保存文件失败！无法创建备份文件。\n");
+        return;
+    }
+    
+    fprintf(fp, "姓名\t\t身份证号\t\t出生日期\t\t校验状态\n");
+    fprintf(fp, "---------------------------------------------------------\n");
+    
+    for (int i = 0; i < n; i++)
+    {
+        fprintf(fp, "%-10s\t%-18s\t%04d-%02d-%02d\t%s\n",
+                p[i].name,
+                p[i].ID,
+                p[i].birthday.year,
+                p[i].birthday.month,
+                p[i].birthday.day,
+                p[i].flag == 1 ? "校验正确" : "校验错误");
+    }
+    fclose(fp);   文件关闭(fp);
+    printf("系统初始化：已成功将格式化数据备份至 person_processed.txt\n");
 
 }
 
-int prompt(void)
+int prompt(void)   int提示(空白)
 {
     int cmd=0;
     printf("-------------------\n");
     printf("1.  公民信息显示（不含错误信息）\n");
-    printf("2.  错误信息查询\n");
+    printf("2.  错误信息查询\n");   printf("2. Error Information Inquiry\n");
     printf("3.  按出生日期排序（不含错误信息）\n");
     printf("4.  重名查询（不含错误信息）\n");
-    printf("0.  退出\n");
+    printf("0.  退出\n");   printf("0.  退出\n");
     printf("-------------------\n");
     printf("请输入你的选择(0-4):");
-    scanf("%d", &cmd);
-    return cmd;
+    scanf("%d", &cmd);   scanf("%d", &cmd);
+    return cmd;   返回cmd;
 }
 
-int main(void)
+int main(void)   int主要(空白)
 {
-    struct person p[N];
-    int cmd, n;
-    char*name;
+    struct person p[N];   struct   结构体 person p[N]；
+    int cmd, n;   Int cmd, n；
+    char*name;   char *名称;
     name=(char*)malloc(20*sizeof(char));
-    n=read(p);
-    get_all_person(p, n);
-    save(p, n);
-    while (1)
-    {   cmd=prompt();
-        if (cmd==0)
+    n=read(p);   n =阅读(p);
+    get_all_person(p, n);   获取所有人员(p, n)；
+    save   保存(p, n);   保存(p, n);
+    while (1)   而(1)
+    {   cmd=prompt();   迅速将cmd = ();
+        if (cmd==0)   如果(cmd = = 0)
         {
-            printf("程序结束。\n");
-            break;
+            printf("程序结束。\n");   printf("程序结束。\n");
+            break;   打破;
         }
-        if (cmd==1)
+        if (cmd==1)   如果(cmd = = 1)
         {
-            display_person(p, n, 1);
+            display_person(p, n, 1);   显示人物(p, n， 1)；
         }
-        else if (cmd==2)
+        else if (cmd==2)   否则if   如果 （cmd==2）
         {
-            display_person(p, n, 0);
+            display_person(p, n, 0);   显示人物(p, n， 0)；
         }
-        else if (cmd==3)
+        else if (cmd==3)   否则if   如果 （cmd==3）
         {
             birth_sort(p, n);
-            display_person(p, n, 1);
+            display_person(p, n, 1);   显示人物(p, n， 1)；
         }
-        else if (cmd==4)
+        else if (cmd==4)   否则if   如果 （cmd==4）
         {
             printf("请输入要查询的姓名:");
-            scanf("%19s", name);
-            search(p, n, name);
+            scanf("%19s", name);   scanf("%19s", name);
+            search(p, n, name);   搜索（p, n, name）；
         }
-        else
+        else   其他
         {
             printf("输入无效，请重新输入。\n");
         }
     } 
-    free(name);
-    return 0;
+    free(name);   免费(名称);
+    return 0;   返回0;
 }
